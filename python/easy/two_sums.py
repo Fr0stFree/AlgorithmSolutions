@@ -5,14 +5,14 @@ You may assume that each input would have exactly one solution, and you may not 
 You can return the answer in any order.
 """
 from collections import defaultdict
-from typing import List
+from typing import List, Dict
 
 
 class Solution:
     def twoSum(self, nums: List[int], target: int) -> List[int]:
         left_index, right_index = 0, len(nums) - 1
+        extra_dict: Dict[int, List[int]] = defaultdict(list)
         
-        extra_dict = defaultdict(list)
         [extra_dict[value].append(index) for index, value in enumerate(nums)]
         nums.sort()
         
@@ -27,7 +27,6 @@ class Solution:
                 continue
                 
             return [extra_dict[nums[left_index]].pop(), extra_dict[nums[right_index]].pop()]
-            
             
             
 if __name__ == "__main__":
