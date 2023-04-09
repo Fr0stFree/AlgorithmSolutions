@@ -9,5 +9,3 @@ var plusOne = function(digits) {
     number++;
     return Array.from(number.toString()).map(value => Number(value))
 };
-
-console.log(plusOne([1, 2, 3]));
