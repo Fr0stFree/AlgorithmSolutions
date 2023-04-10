@@ -8,6 +8,7 @@
 //The remaining elements of nums are not important as well as the size of nums.
 //Return k.
 
+
 const removeElement = function(nums, val) {
     for (let index = 0; index < nums.length; index++) {
         if (nums[index] === val) {
