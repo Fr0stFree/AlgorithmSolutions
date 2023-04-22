@@ -5,15 +5,19 @@ All occurrences of a character must be replaced with another character while pre
 No two characters may map to the same character, but a character may map to itself.
 """
 class Solution:
-    # not solved yet
     def isIsomorphic(self, s: str, t: str) -> bool:
-        s_previous, t_previous = None, None
+        s_map = {}
+        t_map = {}
 
         for s_letter, t_letter in zip(s, t):
-            if any([s_letter == s_previous and t_letter != t_previous,
-                    s_letter != s_previous and t_letter == t_previous]):
+            if s_letter in s_map and s_map[s_letter] != t_letter:
                 return False
-            s_previous, t_previous = s_letter, t_letter
+
+            if t_letter in t_map and t_map[t_letter] != s_letter:
+                return False
+
+            s_map[s_letter] = t_letter
+            t_map[t_letter] = s_letter
 
         return True
 
@@ -22,6 +26,6 @@ class Solution:
 if __name__ == '__main__':
     solution = Solution()
 
-    # assert solution.isIsomorphic(s='foo', t='bar') is False
-    # assert solution.isIsomorphic(s='egg', t='add') is True
+    assert solution.isIsomorphic(s='foo', t='bar') is False
+    assert solution.isIsomorphic(s='egg', t='add') is True
     assert solution.isIsomorphic(s='badc', t='baba') is False
