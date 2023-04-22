@@ -6,25 +6,25 @@ import time
 
 
 class Solution:
-    # Fuck this task I am out
     def isUgly(self, n: int):
-        ugly_set = {2, 5, 3}
-        divisors = set()
+        if -1 <= n <= 0:
+            return False
 
-        for divisor in self.prime_generator():
-            if divisor > n:
-                return True
-
-            if n % divisor == 0:
-                divisors.add(divisor)
+        for divisor in (2, 3, 5):
+            while n % divisor == 0:
                 n //= divisor
-                if divisors.difference(ugly_set):
-                    return False
 
-            if divisor > 5 and not divisors:
-                return False
+        return n == 1
 
-    def is_prime(self, n):
+    def prime_generator(self):
+        num = 1
+        while True:
+            num += 1
+            if self.is_prime(num):
+                yield num
+
+    @staticmethod
+    def is_prime(n):
         if n <= 1:
             return False
 
@@ -34,12 +34,7 @@ class Solution:
 
         return True
 
-    def prime_generator(self):
-        num = 1
-        while True:
-            num += 1
-            if self.is_prime(num):
-                yield num
+
 
 
 if __name__ == '__main__':
@@ -49,3 +44,7 @@ if __name__ == '__main__':
     assert solution.isUgly(6) is True
     assert solution.isUgly(8) is True
     assert solution.isUgly(7) is False
+    assert solution.isUgly(0) is False
+    assert solution.isUgly(-1) is False
+    assert solution.isUgly(1) is True
+
