@@ -5,18 +5,18 @@
 
 const moveZeroes = function(nums) {
     nums.sort((a, b) => {
-    if (a === 0) {
-        return 1;
-    }
-    if (b === 0) {
-        return -1;
-    }
-    return 0;
+        if (a === 0) {
+            return 1;
+        }
+        if (b === 0) {
+            return -1;
+        }
+        return 0;
     });
 };
 
-const test_array = [0, 1, 0, 3, 12]
+const testArray = [0, 1, 0, 3, 12]
 
-moveZeroes(test_array)
+moveZeroes(testArray)
 
-console.assert(JSON.stringify(test_array) === JSON.stringify([1, 3, 12, 0, 0]))
+console.assert(JSON.stringify(testArray) === JSON.stringify([1, 3, 12, 0, 0]))
