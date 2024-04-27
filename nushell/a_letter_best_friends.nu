@@ -1,5 +1,4 @@
 # Given a string, return if all occurrences of a given letter are always immediately followed by the other given letter.
-use std assert
 
 def solution [letters: list<string>, sentence: string] {
     return (
@@ -10,9 +9,8 @@ def solution [letters: list<string>, sentence: string] {
     )
 }
 
-#[test]
-def test_positive [] {
+def main [] {
     let result = solution ["h" "e"] "he headed to the store"
-    assert ($result == true)
+    let expected = true
+    if $result == $expected { print "PASSED" } else { print $"Expected '($expected)', got '($result)'" }
 }
-g
