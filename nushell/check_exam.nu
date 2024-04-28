@@ -10,5 +10,4 @@ def main [] {
     let result = solution ["a", "a", "b", "b"] ["a", "c", "b", "d"]
     let expected = 6
     if $result == $expected { print "PASSED" } else { print $"Expected '($expected)', got '($result)'" }
-
 }
