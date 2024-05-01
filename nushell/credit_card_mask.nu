@@ -1,5 +1,7 @@
-# Check to see if a string has the same amount of 'x's and 'o's.
-# The method must return a boolean and be case insensitive. The string can contain any char.
+# Usually when you buy something, you're asked whether your credit card number, phone number or answer to your most
+# secret question is still correct. However, since someone could look over your shoulder, you don't want that shown on
+# your screen. Instead, we mask it. Your task is to write a function maskify, which changes all but the last four characters into '#'.
+
 def solution [card_number: string] {
     $card_number | split chars
                  | reverse
