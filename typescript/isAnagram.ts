@@ -20,7 +20,7 @@ let expectedResult: boolean
 result = isAnagram("anagram", "nagaram");
 expectedResult = true;
 console.log(result === expectedResult);
-//
+
 result = isAnagram("rat", "car");
 expectedResult = false;
 console.log(result === expectedResult);
