@@ -1,12 +1,12 @@
 function majorityElement(nums: number[]): number {
     const visitedElements: Map<number, number> = new Map;
-    const theshold = nums.length / 2;
+    const threshold = nums.length / 2;
     for (let num of nums) {
         const amount = visitedElements.get(num);
         let newAmount;
         amount ? newAmount = amount + 1 : newAmount = 1;
         visitedElements.set(num, newAmount)
-        if (newAmount >= theshold) return num;
+        if (newAmount >= threshold) return num;
     }
     return -1;
 }
