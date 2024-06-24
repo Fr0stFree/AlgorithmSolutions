@@ -1,4 +1,4 @@
-def main(n: int, k: int) -> None:
+def divisible_chain(n: int, k: int) -> str:
     is_divisible = lambda divisible, divider: divisible % divider == 0
     result = [n]
 
@@ -9,9 +9,8 @@ def main(n: int, k: int) -> None:
             n -= 1
         result.append(n)
 
-    print("->".join(map(str, result)))
-    return None
+    return " -> ".join(map(str, result))
 
 
 if __name__ == '__main__':
-    main(29, 3)
+    assert divisible_chain(29, 3) == '29 -> 28 -> 27 -> 9 -> 3 -> 1'
