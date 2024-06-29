@@ -14,7 +14,7 @@ let expectedResult: typeof result;
 
 result = minimumAverage([7,8,3,4,15,13,4,1]);
 expectedResult = 5.5;
-console.log(JSON.stringify(result) === JSON.stringify(expectedResult));
+console.log(result === expectedResult);
 
 result = minimumAverage([1,9,8,3,10,5]);
 expectedResult = 5.5;
