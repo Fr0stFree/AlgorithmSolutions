@@ -1,2 +1,2 @@
-# Playground
-Repo for leetcode problem solving
+# Algorithms Solutions
+Repo for coding problem solutions
