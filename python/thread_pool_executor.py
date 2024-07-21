@@ -1,6 +1,4 @@
-from concurrent.futures import ThreadPoolExecutor, Future
-import threading
-import time
+from concurrent.futures import ThreadPoolExecutor
 
 strings = [
     "Да Здравствует ThreadPoolExecutor!!!",
