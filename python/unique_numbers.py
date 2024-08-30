@@ -1,8 +1,7 @@
 from typing import List, Tuple
 
-import numpy as np
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 AMOUNT_OF_EXPERIMENTS = 1000
 
