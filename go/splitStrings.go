@@ -6,8 +6,8 @@ import (
 )
 
 func main() {
-	result := Solution("abcdefge")
-	expected := []string{"ab", "cd", "ef"}
+	result := Solution("abcdefg")
+	expected := []string{"ab", "cd", "ef", "g_"}
 	fmt.Println(slices.Equal(result, expected))
 }
 
