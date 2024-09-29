@@ -17,14 +17,15 @@ func main() {
 }
 
 func Vaporcode(s string) string {
-	letters := make([]string, len([]rune(s)))
+	var builder strings.Builder
 
-	for index, letter := range s {
+	for _, letter := range s {
 		if unicode.IsSpace(letter) {
 			continue
 		}
-		letters[index] = fmt.Sprintf("%c  ", unicode.ToUpper(letter))
+		builder.WriteRune(unicode.ToUpper(letter))
+		builder.WriteString("  ")
 	}
-	sentence := strings.Trim(strings.Join(letters, ""), " ")
-	return sentence
+
+	return strings.Trim(builder.String(), " ")
 }
