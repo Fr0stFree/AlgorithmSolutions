@@ -49,11 +49,14 @@ class BinHeap[T]:
             self._collection[index // 2], self._collection[index] = self._collection[index], self._collection[index // 2]
             return self._sift_up(index//2)
 
-heap = BinHeap()
-elems = [1, 5, 3, 8, 0, 4]
-for elem in elems:
-    heap.add(elem)
+if __name__ == '__main__':
+    heap = BinHeap()
+    elems = [1, 5, 3, 8, 0, 4]
+    for elem in elems:
+        heap.add(elem)
 
-for _ in range(len(elems)):
-    elem = heap.pop()
-    print(elem)
+    result = []
+    for _ in range(len(elems)):
+        result.append(heap.pop())
+
+    assert result == sorted(elems)
