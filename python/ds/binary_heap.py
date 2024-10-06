@@ -7,13 +7,12 @@ class BinHeap[T]:
         self._collection = [None]
 
     def add(self, elem: T) -> None:
-        print(f"add {elem} to {self._collection}")
         self._collection.append(elem)
         self._sift_up(index=len(self._collection)-1)
 
     def pop(self) -> T:
         if len(self._collection) == 1:
-            raise IndexError("Heap is empty")
+            raise ValueError("Heap is empty")
 
         if len(self._collection) == 2:
             return self._collection.pop()
@@ -24,16 +23,13 @@ class BinHeap[T]:
         return elem
 
     def _sift_down(self, index: int) -> None:
-        elem = self._collection[index]
         left, right = inf, inf
         with suppress(IndexError):
             left = self._collection[index * 2]
         with suppress(IndexError):
             right = self._collection[index * 2 + 1]
 
-        if isinf(left) and isinf(right):  # no children. Element on the right place
-            return
-
+        elem = self._collection[index]
         minimum = min(left, right, elem)
         if minimum == elem:
             return
@@ -52,3 +48,12 @@ class BinHeap[T]:
         if ancestor > elem:
             self._collection[index // 2], self._collection[index] = self._collection[index], self._collection[index // 2]
             return self._sift_up(index//2)
+
+heap = BinHeap()
+elems = [1, 5, 3, 8, 0, 4]
+for elem in elems:
+    heap.add(elem)
+
+for _ in range(len(elems)):
+    elem = heap.pop()
+    print(elem)
