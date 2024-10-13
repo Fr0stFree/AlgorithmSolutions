@@ -45,11 +45,11 @@ func main() {
 	weight := func(el element) int {
 		return el.(int)
 	}
-	m := max(it, weight)
+	m := fmax(it, weight)
 	fmt.Println(m)
 }
 
-func max(it iterator, weight weightFunc) element {
+func fmax(it iterator, weight weightFunc) element {
 	var maxEl element
 	for it.next() {
 		curr := it.val()
