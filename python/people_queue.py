@@ -40,4 +40,4 @@ def read_data() -> list[tuple[int, int, int]]:
 if __name__ == '__main__':
     data = read_data()
     solution = solve(data)
-    print(solution)
+    print(" ".join(map(str, solution)))

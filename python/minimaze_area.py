@@ -7,29 +7,24 @@ import math
 
 def solve(volume: int) -> tuple[int, int, int, int]:
     smallest_area = math.inf
-    sides: list[int] = [0] * 3
+    sides = [0, 0, 0]
 
-    a = 0
-    while a*a*a < volume:
-        a += 1
-        b = 0
-        while b*b*a < volume:
-            b += 1
-            c = volume / a / b
-            if not c.is_integer():
+    for a in range(1, int(volume ** (1 / 3)) + 1):
+        if volume % a != 0:
+            continue
+
+        for b in range(a, int(math.sqrt(volume // a)) + 1):
+            if (volume // a) % b != 0:
                 continue
 
-            c = int(c)
-            area = int(2 * (a*b + a*c + b*c))
+            c = volume // (a * b)
+            area = 2 * (a * b + b * c + a * c)
 
             if area < smallest_area:
-                sides[0], sides[1], sides[2] = a, b, c
                 smallest_area = area
+                sides = [a, b, c]
 
     return smallest_area, sides[0], sides[1], sides[2]
-
-
-
 
 
 if __name__ == '__main__':
