@@ -13,7 +13,7 @@
 import math
 
 
-def find_smallest_node_lengths(volume: int) -> list[int]:
+def solve(volume: int) -> list[int]:
     smallest_area = math.inf
     best_cube = [0, 0, 0]
 
@@ -37,5 +37,5 @@ def find_smallest_node_lengths(volume: int) -> list[int]:
 
 if __name__ == '__main__':
     volume = int(input())
-    result = find_smallest_node_lengths(volume)
+    result = solve(volume)
     print(" ".join(map(str, sorted(result))))
