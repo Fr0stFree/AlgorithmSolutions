@@ -22,9 +22,9 @@ def solve(volume: int) -> tuple[int, int, int, int]:
 
             if area < smallest_area:
                 smallest_area = area
-                sides = [a, b, c]
+                sides = sorted([a, b, c])
 
-    return smallest_area, sides[0], sides[1], sides[2]
+    return smallest_area, *sides
 
 
 if __name__ == '__main__':
