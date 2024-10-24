@@ -11,7 +11,7 @@ import (
 
 func main() {
 	data := readInput()
-	result := countZeros(data, 0)
+	result := countZeros(data)
 	fmt.Println(result)
 }
 
@@ -22,13 +22,13 @@ func readInput() string {
 	return text
 }
 
-func countZeros(number string, zerosCounter int) int {
+func countZeros(number string) int {
 	if len(number) == 0 {
-		return zerosCounter
+		return 0
 	}
 	digit, _ := strconv.Atoi(string(number[0]))
 	if digit == 0 {
-		zerosCounter++
+		return 1 + countZeros(number[1:])
 	}
-	return countZeros(number[1:], zerosCounter)
+	return countZeros(number[1:])
 }
