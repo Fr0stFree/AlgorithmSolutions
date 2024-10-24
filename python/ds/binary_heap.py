@@ -1,5 +1,5 @@
 from contextlib import suppress
-from math import inf, isinf
+from math import inf
 
 
 class BinHeap[T]:
