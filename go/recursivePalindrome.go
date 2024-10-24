@@ -5,11 +5,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
 	data := readInput()
-	result := isPalindrome(data, 0)
+	result := isPalindrome(data)
 	if result == true {
 		fmt.Println("True")
 	} else {
@@ -20,16 +21,16 @@ func main() {
 func readInput() string {
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
+	text, _ = strings.CutSuffix(text, "\n")
 	return text
 }
 
-func isPalindrome(word string, index int) bool {
-	if index >= len(word)/2 {
+func isPalindrome(word string) bool {
+	if len(word) == 0 || len(word) == 1 {
 		return true
 	}
-	if word[index] != word[len(word)-1-index] {
+	if word[0] != word[len(word)-1] {
 		return false
 	}
-	index++
-	return isPalindrome(word, index)
+	return isPalindrome(word[1 : len(word)-1])
 }
