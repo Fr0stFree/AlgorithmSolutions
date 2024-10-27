@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	data := readInput()
+	data := readInputStr()
 	result := isPalindrome(data)
 	if result == true {
 		fmt.Println("True")
@@ -18,7 +18,7 @@ func main() {
 	}
 }
 
-func readInput() string {
+func readInputStr() string {
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
 	text, _ = strings.CutSuffix(text, "\n")
