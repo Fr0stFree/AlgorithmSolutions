@@ -44,7 +44,7 @@ func readInputData() (int, int) {
 	reader := bufio.NewReader(os.Stdin)
 	text, _ := reader.ReadString('\n')
 	maybeSize := strings.Split(strings.TrimRight(text, "\n"), " ")
-	width, _ := strconv.Atoi(maybeSize[0])
-	height, _ := strconv.Atoi(maybeSize[1])
+	height, _ := strconv.Atoi(maybeSize[0])
+	width, _ := strconv.Atoi(maybeSize[1])
 	return width, height
 }
