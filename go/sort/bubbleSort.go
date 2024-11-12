@@ -14,7 +14,15 @@ func main() {
 	fmt.Println(strings.Trim(fmt.Sprint(values), "[]"))
 }
 
-func bubbleSort(values []int) {}
+func bubbleSort(values []int) {
+	for idx := range values {
+		for innerIdx := 0; innerIdx < len(values) - idx - 1; innerIdx++ {
+			if values[innerIdx] > values[innerIdx+1] {
+				values[innerIdx], values[innerIdx+1] = values[innerIdx+1], values[innerIdx]
+			}
+		}
+	}
+}
 
 func readInput() []int {
 	scanner := bufio.NewScanner(os.Stdin)
