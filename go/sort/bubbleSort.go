@@ -10,21 +10,11 @@ import (
 
 func main() {
 	values := readInput()
-	selectionSort(values)
+	bubbleSort(values)
 	fmt.Println(strings.Trim(fmt.Sprint(values), "[]"))
 }
 
-func selectionSort(values []int) {
-	for idx := range values {
-		for offset := range values[idx:] {
-			minIdx := idx
-			if values[idx] > values[idx+offset] {
-				minIdx = idx + offset
-			}
-			values[idx], values[minIdx] = values[minIdx], values[idx]
-		}
-	}
-}
+func bubbleSort(values []int) {}
 
 func readInput() []int {
 	scanner := bufio.NewScanner(os.Stdin)
