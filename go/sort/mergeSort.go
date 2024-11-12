@@ -5,24 +5,23 @@ import (
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 )
 
 func main() {
 	values := readInput()
-	mergeSort(values)
+	result := mergeSort(values)
+	fmt.Println(result)
 }
+
 
 func mergeSort(values []int) []int {
 	if len(values) <= 1 {
-		fmt.Println(strings.Trim(fmt.Sprint(values), "[]"))
 		return values
 	}
 	left, right := values[:len(values)/2], values[len(values)/2:]
 	sortedLeft := mergeSort(left)
 	sortedRight := mergeSort(right)
 	result := merge(sortedLeft, sortedRight)
-	fmt.Println(strings.Trim(fmt.Sprint(result), "[]"))
 	return result
 }
 
