@@ -10,11 +10,11 @@ import (
 
 func main() {
 	values := readInput()
-	bubbleSort(values)
+	selectionSort(values)
 	fmt.Println(strings.Trim(fmt.Sprint(values), "[]"))
 }
 
-func bubbleSort(values []int) {
+func selectionSort(values []int) {
 	for idx := range values {
 		for offset := range values[idx:] {
 			if values[idx] > values[idx+offset] {
