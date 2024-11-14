@@ -12,11 +12,11 @@ import (
 
 func main() {
 	values, lookingValue := readInputData()
-	idx := lowerBound(values, lookingValue)
+	idx := findLowerBound(values, lookingValue)
 	fmt.Println(idx)
 }
 
-func lowerBound(array []int, target int) int {
+func findLowerBound(array []int, target int) int {
 	low, high, mid := 0, len(array)-1, 0
 	for low <= high {
 		mid = (low + high) / 2
