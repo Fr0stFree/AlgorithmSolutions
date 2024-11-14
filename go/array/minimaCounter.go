@@ -12,14 +12,14 @@ import (
 
 func main() {
 	data := readInputData()
-	result := countExtrema(data)
+	result := countMinima(data)
 	fmt.Println(result)
 }
 
-func countExtrema(data []int) int {
+func countMinima(data []int) int {
 	var counter int
 	for index := 1; index < len(data)-1; index++ {
-		if data[index] > data[index+1] && data[index] > data[index-1] {
+		if data[index] < data[index+1] && data[index] < data[index-1] {
 			counter++
 			index++
 		}
