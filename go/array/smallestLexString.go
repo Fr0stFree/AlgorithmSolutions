@@ -13,12 +13,12 @@ import (
 func main() {
 	data := readInputData()
 	for _, element := range data {
-		word := makeBiggestWord(element)
+		word := makeSmallestLexString(element)
 		fmt.Println(word)
 	}
 }
 
-func makeBiggestWord(parts []string) string {
+func makeSmallestLexString(parts []string) string {
 	sort.Slice(parts, func(i, j int) bool {
 		return parts[i] + parts[j] < parts[j] + parts[i]
 	})
