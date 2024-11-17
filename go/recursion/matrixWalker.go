@@ -11,37 +11,38 @@ import (
 )
 
 func main() {
-	target := readInputData()
-	amount := calcHopsAmount(target)
+	height, width := readInputData()
+	amount := calcPathsAmount(height, width)
 	fmt.Println(amount)
 }
 
-func calcHopsAmount(target int) int {
-	var calculateHops func(target int) int
-	var memo = map[int]int{
-		1: 1,
-		3: 2,
-		4: 4,
+func calcPathsAmount(height, width int) int {
+	var calc func(height, width int) int
+	var memo = map[string]int{
+		"1-1": 1,
 	}
 
-	calculateHops = func(target int) int {
-		if target < 1 {
+	calc = func(height, width int) int {
+		if height <= 0 || width <= 0 {
 			return 0
 		}
-		result, isExist := memo[target]
-		if isExist {
+		key := fmt.Sprintf("%d-%d", height, width)
+		result, isCalculated := memo[key]
+		if isCalculated {
 			return result
 		}
-		memo[target] = calculateHops(target-1) + calculateHops(target-3) + calculateHops(target-4)
-		return memo[target]
+		memo[key] = calc(height-1, width) + calc(height, width-1)
+		return memo[key]
 	}
-	return calculateHops(target)
+	return calc(height, width)
 }
 
-func readInputData() int {
+func readInputData() (int, int) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Split(bufio.ScanWords)
 	scanner.Scan()
-	target, _ := strconv.Atoi(scanner.Text())
-	return target
+	width, _ := strconv.Atoi(scanner.Text())
+	scanner.Scan()
+	height, _ := strconv.Atoi(scanner.Text())
+	return height, width
 }
