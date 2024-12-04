@@ -16,31 +16,29 @@ func main() {
 
 func findLenOfLongestSubsequence(values []int) int {
 	var find func(int) int
+	var memo = map[int]int{}
 
 	find = func(currentIdx int) int {
-		if currentIdx == 1 {
-			fmt.Printf("return 1 because currentIdx is 1\n")
+		if currentIdx == 0 {
 			return 1
 		}
-		var options = []int{1}
-		for i := currentIdx; i < 0 && currentIdx - i < 10; i-- {
-			if values[i] > values[i-1] {
-				option := 1 + find(i-1)
-				options = append(options, option)
-			}
-			
+		if result, isExists := memo[currentIdx]; isExists {
+			return result
 		}
-		fmt.Printf("options: %v\n", options)
-		for _, option := range options {
-			if option > options[0] {
-				options[0] = option
+		memo[currentIdx] = 1
+		for idx := currentIdx - 1; idx >= 0 && currentIdx-idx < 10; idx-- {
+			if values[idx] < values[currentIdx] {
+				memo[currentIdx] = max(memo[currentIdx], find(idx)+1)
 			}
 		}
-		fmt.Printf("return options[0]: %d\n", options[0])
-		return options[0]
-
+		return memo[currentIdx]
 	}
-	return find(len(values)-1)
+
+	maxLen := 0
+	for idx := range values {
+		maxLen = max(maxLen, find(idx))
+	}
+	return maxLen
 }
 
 func readInputData() []int {
