@@ -18,7 +18,7 @@ func DigitalRoot(n int) int {
 	for _, digit := range digits {
 		number, _ := strconv.Atoi(digit)
 		sum += number
-	}å
+	}
 	if sum > 9 {
 		return DigitalRoot(sum)
 	}
