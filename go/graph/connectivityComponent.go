@@ -5,41 +5,58 @@ import (
 	"fmt"
 	"os"
 	"slices"
+	"sort"
 	"strconv"
+	"strings"
 )
 
 
 func main() {
 	graph := readInputData()
-	amount := calcGraphComponents(graph)
-	fmt.Println(amount)
+	components := findGraphComponents(graph)
+	printResult(components)
 }
 
-func calcGraphComponents(graph map[int][]int) int {
-	var visitedNodes []int
-	var dfs func(node int)
-
-	dfs = func(currentNode int) {
-		isVisited := slices.Contains(visitedNodes, currentNode)
-		if isVisited {
-			return
-		}
-		visitedNodes = append(visitedNodes, currentNode)
-		neighbors := graph[currentNode]
-		for _, neighbor := range neighbors {
-			dfs(neighbor)
-		}
+func printResult(components [][]int) {
+	fmt.Println(len(components))
+	sort.Slice(components, func(i, j int) bool {
+		return slices.Min(components[i]) < slices.Min(components[j])
+	})
+	for _, component := range components {
+		slices.Sort(component)
+		fmt.Printf("%d %s\n", len(component), strings.Trim(fmt.Sprint(component), "[]"))
 	}
-	componentsAmount := 0
+}
+
+func findGraphComponents(graph map[int][]int) [][]int {
+	visitedNodes := make(map[int]bool)
+	var dfs func(node int) []int
+
+	dfs = func(currentNode int) []int {
+		visitedNodes[currentNode] = true
+		neighbors := graph[currentNode]
+		localComponents := []int{currentNode}
+
+		for _, neighbor := range neighbors {
+			_, isVisited := visitedNodes[neighbor]
+			if isVisited {
+				continue
+			}
+			components := dfs(neighbor)
+			localComponents = slices.Concat(localComponents, components)
+		}
+		return localComponents
+	}
+	components := make([][]int, 0)
 	for node := range graph {
-		isVisited := slices.Contains(visitedNodes, node)
+		_, isVisited := visitedNodes[node]
 		if !isVisited {
-			componentsAmount++
-			dfs(node)
+			component := dfs(node)
+			components = append(components, component)
 		}
 		
 	}
-	return componentsAmount
+	return components
 }
 
 func readInputData() map[int][]int {
