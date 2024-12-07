@@ -9,52 +9,26 @@ import (
 )
 
 func main() {
-	graph := readInputData()
-	hinges, isolations, valences := calcGraphProperties(graph)
-	fmt.Println(hinges)
-	fmt.Println(isolations)
-	fmt.Println(strings.Trim(fmt.Sprint(valences), "[]"))
-}
+	matrix := readInputData()
+	var builder strings.Builder
+	size := len(matrix)
 
-func calcGraphProperties(graph map[int]map[int]int) (int, int, []int) {
-	var hingesAmount, isolatedAmount int
-	var maxValences []int
-	valences := make(map[int]int)
-	for node, connections := range graph {
-		if connections[node] == 1 {
-			hingesAmount++
-		}
-
-		isIsolated := true
-		for neighbor, isConnected := range connections {
-			if isConnected == 1 && neighbor != node {
-				isIsolated = false
-				break
+	for rowIdx := 1; rowIdx <= size; rowIdx++ {
+		for columnIdx := 1; columnIdx <= size; columnIdx++ {
+			var value int
+			_, isExist := matrix[rowIdx][columnIdx] 
+			if isExist {
+				value = 1
+			} else {
+				value = 0
 			}
+			builder.WriteString(fmt.Sprintf("%d ", value))
 		}
-		if isIsolated {
-			isolatedAmount++
-		}
-		
-		valence := 0
-		for _, isConnected := range connections {
-			valence += isConnected
-		}
-		valences[node] = valence
+		builder.WriteString("\n")
 	}
-	maxValence := 0
-	for _, valence := range valences {
-		if valence > maxValence {
-			maxValence = valence
-		}
-	}
-	for node, valence := range valences {
-		if valence == maxValence {
-			maxValences = append(maxValences, node)
-		}
-	}
-	return hingesAmount, isolatedAmount, maxValences
+	fmt.Print(builder.String())
 }
+
 
 func readInputData() map[int]map[int]int {
 	scanner := bufio.NewScanner(os.Stdin)
@@ -62,15 +36,17 @@ func readInputData() map[int]map[int]int {
 	scanner.Scan()
 	nodesAmount, _ := strconv.Atoi(scanner.Text())
 
-	graph := make(map[int]map[int]int, nodesAmount)
-	for idx := range nodesAmount {
-		graph[idx+1] = make(map[int]int)
-		for innerIdx := range nodesAmount {
+	matrix := make(map[int]map[int]int, nodesAmount)
+	for row := range nodesAmount {
+		matrix[row+1] = make(map[int]int)
+		scanner.Scan()
+		edgesAmount, _ := strconv.Atoi(scanner.Text())
+		
+		for range edgesAmount {
 			scanner.Scan()
-			value, _ := strconv.Atoi(scanner.Text())
-			graph[idx+1][innerIdx+1] = value
+			toNode, _ := strconv.Atoi(scanner.Text())
+			matrix[row+1][toNode] = 1
 		}
 	}
-
-	return graph
+	return matrix
 }
