@@ -2,13 +2,13 @@ import time
 
 from threading import Thread, Lock
 from queue import Queue, Full
-from typing import Any
+from typing import Any, Callable
 
 queue = Queue(maxsize=4)
 electronics = ["смартфон", "ноутбук", "планшет", "камера", "гарнитура",
                "телевизор", "гаджет", "монитор", "роутер", "плеер"]
 
-def get_safe_printer() -> callable:
+def get_safe_printer() -> Callable:
     lock = Lock()
 
     def _print(*args, **kwargs) -> None:
