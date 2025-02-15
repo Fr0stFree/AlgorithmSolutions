@@ -6,7 +6,7 @@ import (
 )
 
 type Counter struct {
-    lock *sync.Mutex
+    lock sync.RWMutex
     values map[string]int
 }
 
@@ -17,22 +17,22 @@ func (c *Counter) Increment(str string) {
 }
 
 func (c *Counter) Value(str string) int {
+    c.lock.RLock()
+    defer c.lock.RUnlock()
 	return c.values[str]
 }
 
 func (c *Counter) Range(fn func(key string, val int)) {
-    c.lock.Lock()
-    defer c.lock.Unlock()
+    c.lock.RLock()
+    defer c.lock.RUnlock()
 	for key, value := range c.values {
         fn(key, value)
     }
 }
 
 func NewCounter() *Counter {
-    var lock sync.Mutex
 	return &Counter{
         values: make(map[string]int),
-        lock: &lock,
     }
 }
 
