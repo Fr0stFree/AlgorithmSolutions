@@ -36,7 +36,6 @@ func prettify(m map[string]int) string {
 	builder.WriteRune('}')
 	
 	result := builder.String()
-	fmt.Printf(result)
 	return result
 }
 
