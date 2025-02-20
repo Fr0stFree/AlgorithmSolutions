@@ -3,28 +3,22 @@ package main
 import (
 	"strings"
 	"fmt"
+	"unicode"
 )
 
-const ALLOWED_LETTERS = "-1234567890abcdefghijklmnopqrstuvwxyz"
-const SPECIAL_CHARACTERS = "!#$%^&*+./_ "
 
 func slugify(src string) string {
-	src = strings.ToLower(src)
-	var builder strings.Builder 
-
-	for _, letter := range src {
-		if strings.Contains(SPECIAL_CHARACTERS, string(letter)) {
-			builder.WriteRune('-')
-			continue
-		}
-		if strings.Contains(ALLOWED_LETTERS, string(letter)) {
-			builder.WriteRune(letter)
-			continue
+	var result []rune
+	for _, r := range strings.ToLower(src) {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '-' {
+			result = append(result, r)
+		} else {
+			result = append(result, ' ')
 		}
 	}
-    return strings.Trim(builder.String(), " -")
+	words := strings.Fields(string(result))
+	return strings.Join(words, "-")
 }
-
 func main() {
     phrase := "Go - Is - Awesome"
     fmt.Println(slugify(phrase))
