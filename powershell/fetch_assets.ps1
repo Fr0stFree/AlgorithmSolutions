@@ -1,17 +1,12 @@
 $accessToken = $null
 $refreshToken = $null
 $tokensFile = "tokens.json"
-# $userId = "..." # your user id
-# $url = "https://mdr.kaspersky.com/api/v1/$userId/assets/list"
-# $refreshTokenUrl = "https://mdr.kaspersky.com/api/v1/$userId/session/confirm"
-# TODO: remove this block
-$userId = "b2d2086ab12742278aa9db9387a2dc2f"
-$url = "https://mdr-test.kaspersky.com/api/v1/$userId/assets/list"
-$refreshTokenUrl = "https://mdr-test.kaspersky.com/api/v1/$userId/session/confirm"
-
+$userId = "" # your user id
+$url = "https://mdr.kaspersky.com/api/v1/$userId/assets/list"
+$refreshTokenUrl = "https://mdr.kaspersky.com/api/v1/$userId/session/confirm"
 $savePath = "output.csv"
-$maxPage = 1000
-$pageSize = 10
+$maxPage = 10000
+$pageSize = 100
 
 
 function LoadTokensFromFile {
@@ -56,38 +51,37 @@ function FetchAssets {
      $headers = @{
          Authorization = "Bearer $accessToken"
          ContentType = "application/json"
-     }
-     $body = @{
-         sort = "last_seen:asc"
-         page_size = $pageSize
-         page = $page
-         version = 2
-     }
-     try {
-         $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
-     } catch {
-         $statusCode = $_.Exception.Response.StatusCode.Value__
-         if ($statusCode -eq 403) {
-             RefreshAccessToken
-             $headers.Authorization = "Bearer $accessToken"
-             $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
-         } else {
-             Write-Host "Failed to retrieve assets. Response from server: $($_.Exception.Response)"
-             Exit
-         }
-     }
-     $body = $response.Content | ConvertFrom-Json
+    }
+    $body = @{
+        sort = "computer_name_hostname:asc"
+        page_size = $pageSize
+        page = $page
+        version = 2
+    }
+    try {
+        $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
+    } catch {
+        $statusCode = $_.Exception.Response.StatusCode.Value__
+        if ($statusCode -eq 403) {
+            RefreshAccessToken
+            $headers.Authorization = "Bearer $accessToken"
+            $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
+        } else {
+            Write-Host "Failed to retrieve assets. Response from server: $($_.Exception.Response)"
+            Exit
+        }
+    }
+    $body = $response.Content | ConvertFrom-Json
 
-     if ($null -eq $body -or $body.Count -eq 0) {
-         Write-Host "No assets found on page $page"
-         return $null
-     }
+    if ($null -eq $body -or $body.Count -eq 0) {
+        Write-Host "No assets found on page $page"
+        return $null
+    }
 
     $assets = @()
     foreach ($asset in $body) {
         $assetObj = [Asset]::new($asset)
         $assets += $assetObj
-
     }
     Write-Host "Page $page fetched and saved to $savePath"
     return $assets
