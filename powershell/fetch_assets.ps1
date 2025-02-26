@@ -120,7 +120,7 @@ class Asset {
     [string] $os_version
     [string] $installed_product_info
     [string] $tenant_name
-    [string] $isolation
+    [bool] $isolation
     [string] $status
     [string] $ksc_host_id
     [string] $asset_id
@@ -133,17 +133,17 @@ class Asset {
     [string] $ip
 
     Asset([PSObject]$assetData) {
-        $this.host_name = if ($null -eq $assetData.host_name) { "" } else { $assetData.host_name }
+        $this.host_name = if ($null -eq $assetData.host_name) { "" } else { $assetData.host_name.Trim() }
         $this.last_seen = [System.DateTimeOffset]::FromUnixTimeMilliseconds($assetData.last_seen).DateTime
         $this.first_seen = [System.DateTimeOffset]::FromUnixTimeMilliseconds($assetData.first_seen).DateTime
-        $this.os_version = if ($null -eq $assetData.os_version) { "" } else { $assetData.os_version }
-        $this.installed_product_info = if ($null -eq $assetData.installed_product_info) { "" } else { $assetData.installed_product_info }
-        $this.tenant_name = if ($null -eq $assetData.tenant_name) { "" } else { $assetData.tenant_name }
+        $this.os_version = if ($null -eq $assetData.os_version) { "" } else { $assetData.os_version.Trim() }
+        $this.installed_product_info = if ($null -eq $assetData.installed_product_info) { "" } else { $assetData.installed_product_info.Trim() }
+        $this.tenant_name = if ($null -eq $assetData.tenant_name) { "" } else { $assetData.tenant_name.Trim() }
         $this.isolation = if ($null -eq $assetData.isolation) { "" } else { $assetData.isolation }
-        $this.status = if ($null -eq $assetData.status) { "" } else { $assetData.status }
-        $this.ksc_host_id = if ($null -eq $assetData.ksc_host_id) { "" } else { $assetData.ksc_host_id }
-        $this.asset_id = if ($null -eq $assetData.asset_id) { "" } else { $assetData.asset_id }
-        $this.domain = if ($null -eq $assetData.domain) { "" } else { $assetData.domain }
+        $this.status = if ($null -eq $assetData.status) { "" } else { $assetData.status.Trim() }
+        $this.ksc_host_id = if ($null -eq $assetData.ksc_host_id) { "" } else { $assetData.ksc_host_id.Trim() }
+        $this.asset_id = if ($null -eq $assetData.asset_id) { "" } else { $assetData.asset_id.Trim() }
+        $this.domain = if ($null -eq $assetData.domain) { "" } else { $assetData.domain.Trim() }
         $this.dsc = ($assetData.network_interfaces.dsc | Where-Object { $_ -ne $null }) -join "|"
         $this.dnsd = ($assetData.network_interfaces.dnsd | Where-Object { $_ -ne $null }) -join "|"
         $this.defg = ($assetData.network_interfaces.defg | Where-Object { $_ -ne $null }) -join "|"

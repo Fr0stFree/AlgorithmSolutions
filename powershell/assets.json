@@ -59,7 +59,7 @@
         "domain": "",
         "first_seen": 1738686943000,
         "last_seen": 1739529341000,
-        "os_version": "Windows 2019 RS5 ServerStandard x64",
+        "os_version": "CentOS release 6.10 (Final)\n",
         "installed_product_info": "KES 12.4.0.467",
         "product_map": {
             "KES": {
