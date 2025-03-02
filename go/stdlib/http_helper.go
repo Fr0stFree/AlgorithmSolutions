@@ -1,110 +1,186 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 )
 
-type StatusErr struct {
-	Code   int
-	Status string
+type Handy struct {
+	client *http.Client
+	req    *http.Request
+	data   any
+	err    error
 }
 
-func (e StatusErr) Error() string {
-	return "invalid response status: " + e.Status
+func NewHandy() *Handy {
+	req, err := http.NewRequest(http.MethodGet, "", nil)
+	if err != nil {
+		panic(err)
+	}
+	return &Handy{
+		client: http.DefaultClient,
+		req:    req,
+	}
 }
 
-func httpGet(uri string, headers map[string]string, params map[string]string, timeout int) (map[string]any, error) {
-	client := http.Client{Timeout: time.Duration(timeout) * time.Millisecond}
-	req, err := http.NewRequest(http.MethodGet, uri, nil)
+func (h *Handy) URL(uri string) *Handy {
+	u, err := url.Parse(uri)
 	if err != nil {
-		return nil, err
+		h.err = err
 	}
+	h.req.URL = u
+	return h
+}
 
-	for key, value := range headers {
-		req.Header.Add(key, value)
+func (h *Handy) Client(client *http.Client) *Handy {
+	h.client = client
+	return h
+}
+
+func (h *Handy) Header(key, value string) *Handy {
+	h.req.Header.Add(key, value)
+	return h
+}
+
+func (h *Handy) Param(key, value string) *Handy {
+	query := h.req.URL.Query()
+	query.Add(key, value)
+	h.req.URL.RawQuery = query.Encode()
+	return h
+}
+
+func (h *Handy) Form(form map[string]string) *Handy {
+	h.req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	data := url.Values{}
+	for key, value := range form {
+		data.Add(key, value)
 	}
+	h.req.Body = io.NopCloser(bytes.NewReader([]byte(data.Encode())))
+	h.req.ContentLength = int64(len(data.Encode()))
+	return h
+}
 
-	query := url.Values{}
-	for key, value := range params {
-		query.Add(key, value)
-	}
-	req.URL.RawQuery = query.Encode()
-
-	resp, err := client.Do(req)
+func (h *Handy) JSON(v any) *Handy {
+	h.req.Header.Set("Content-Type", "application/json")
+	h.req.Header.Add("Accept", "application/json")
+	data, err := json.Marshal(v)
 	if err != nil {
-		return nil, err
+		h.err = err
 	}
-	if resp.StatusCode > 299 {
-		return nil, StatusErr{resp.StatusCode, resp.Status}
-	}
+	h.req.Body = io.NopCloser(bytes.NewReader(data))
+	h.req.ContentLength = int64(len(data))
+	return h
+}
 
+func (h *Handy) Get() *HandyResponse {
+	if h.err != nil {
+		return &HandyResponse{err: h.err}
+	}
+	h.req.Method = http.MethodGet
+	resp, err := h.client.Do(h.req)
+	if err != nil {
+		return &HandyResponse{err: err}
+	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return &HandyResponse{err: err, StatusCode: resp.StatusCode}
 	}
-	data := make(map[string]any)
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
+	return &HandyResponse{StatusCode: resp.StatusCode, data: data}
 }
 
+func (h *Handy) Post() *HandyResponse {
+	if h.err != nil {
+		return &HandyResponse{err: h.err}
+	}
+	h.req.Method = http.MethodPost
+	resp, err := h.client.Do(h.req)
+	if err != nil {
+		return &HandyResponse{err: err}
+	}
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return &HandyResponse{StatusCode: resp.StatusCode, err: err}
+	}
+	return &HandyResponse{StatusCode: resp.StatusCode, data: data}
+}
+
+type HandyResponse struct {
+	StatusCode int
+	err        error
+	data       []byte
+}
+
+func (r *HandyResponse) OK() bool {
+	return r.StatusCode == http.StatusOK
+}
+
+func (r *HandyResponse) Bytes() []byte {
+	return r.data
+}
+
+// String возвращает тело ответа как строку
+func (r *HandyResponse) String() string {
+	return string(r.data)
+}
+
+func (r *HandyResponse) JSON(v any) {
+	err := json.Unmarshal(r.data, v)
+	if err != nil {
+		r.err = err
+	}
+}
+
+func (r *HandyResponse) Err() error {
+	return r.err
+}
 
 func main() {
 	{
-		// GET-запрос
-		const uri = "https://httpbingo.org/json"
-		data, err := httpGet(uri, nil, nil, 3000)
-		fmt.Printf("GET %v\n", uri)
-		fmt.Println(data, err)
-		fmt.Println()
-		// GET https://httpbingo.org/json
-		// map[slideshow:map[author:Yours Truly date:date of publication slides:[map[title:Wake up to WonderWidgets! type:all] map[items:[Why <em>WonderWidgets</em> are great Who <em>buys</em> WonderWidgets] title:Overview type:all]] title:Sample Slide Show]] <nil>
-	}
+		// примеры запросов
 
-	{
-		// 404 Not Found
-		const uri = "https://httpbingo.org/whatever"
-		data, err := httpGet(uri, nil, nil, 3000)
-		fmt.Printf("GET %v\n", uri)
-		fmt.Println(data, err)
-		fmt.Println()
-		// GET https://httpbingo.org/whatever
-		// map[] invalid response status: 404 Not Found
-	}
+		// GET-запрос с параметрами
+		NewHandy().URL("https://httpbingo.org/get").Param("id", "42").Get()
 
-	{
-		// С заголовками
-		const uri = "https://httpbingo.org/headers"
-		headers := map[string]string{
-			"accept": "application/xml",
-			"host":   "httpbingo.org",
+		// HTTP-заголовки
+		NewHandy().
+			URL("https://httpbingo.org/get").
+			Header("Accept", "text/html").
+			Header("Authorization", "Bearer 1234567890").
+			Get()
+
+		// POST формы
+		params := map[string]string{
+			"brand":    "lg",
+			"category": "tv",
 		}
-		data, err := httpGet(uri, headers, nil, 3000)
-		fmt.Printf("GET %v\n", uri)
-		respHeaders := data["headers"].(map[string]any)
-		fmt.Println(respHeaders["Accept"], respHeaders["Host"], err)
-		fmt.Println()
-		// GET https://httpbingo.org/headers
-		// [application/xml] [httpbingo.org] <nil>
+		NewHandy().URL("https://httpbingo.org/post").Form(params).Post()
+
+		// POST JSON-документа
+		NewHandy().URL("https://httpbingo.org/post").JSON(params).Post()
 	}
 
 	{
-		// С URL-параметрами
-		const uri = "https://httpbingo.org/get"
-		params := map[string]string{"id": "42"}
-		data, err := httpGet(uri, nil, params, 3000)
-		fmt.Printf("GET %v\n", uri)
-		fmt.Println(data["args"], err)
-		fmt.Println()
-		// GET https://httpbingo.org/get
-		// map[id:[42]] <nil>
+		// пример обработки ответа
+
+		// отправляем GET-запрос с параметрами
+		resp := NewHandy().URL("https://httpbingo.org/get").Param("id", "42").Get()
+		if !resp.OK() {
+			panic(resp.String())
+		}
+
+		// декодируем ответ в JSON
+		var data map[string]any
+		resp.JSON(&data)
+
+		fmt.Println(data["url"])
+		// "https://httpbingo.org/get"
+		fmt.Println(data["args"])
+		// map[id:[42]]
 	}
 }
