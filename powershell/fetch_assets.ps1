@@ -120,7 +120,7 @@ class Asset {
     [string] $os_version
     [string] $installed_product_info
     [string] $tenant_name
-    [bool] $isolation
+    [string] $isolation
     [string] $status
     [string] $ksc_host_id
     [string] $asset_id
