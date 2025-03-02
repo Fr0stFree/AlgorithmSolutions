@@ -3,16 +3,25 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
+	"bufio"
 )
 
 func readLines(name string) ([]string, error) {
-	data, err := os.ReadFile(name)
+	file, err := os.Open(name)
 	if err != nil {
 		return nil, err
 	}
-	sentences := strings.Split(string(data), "\n")
-	return sentences[:len(sentences)-1], nil
+	defer file.Close()
+
+	sentences := make([]string, 0)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		sentences = append(sentences, scanner.Text())
+	}
+	if scanner.Err() != nil {
+		return nil, scanner.Err()
+	}
+	return sentences, nil
 }
 
 func main() {
