@@ -9,6 +9,7 @@ $maxPage = 10000
 $pageSize = 100
 
 
+# Загружает токены доступа из файла. Проверяет наличие refresh token.
 function LoadTokensFromFile {
     Write-Host "Loading tokens from file..."
     $tokens = Get-Content -Path $tokensFile | ConvertFrom-Json
@@ -21,6 +22,7 @@ function LoadTokensFromFile {
     Write-Host "Tokens loaded"
 }
 
+# Обновляет access token с использованием refresh token. Сохраняет новые токены обратно в файл.
 function RefreshAccessToken {
     Write-Host "Refreshing access token..."
     $body = @{
@@ -44,6 +46,9 @@ function RefreshAccessToken {
     Write-Host "Access token refreshed"
 }
 
+# Получает данные об активах с указанной страницы. Принимает параметр:
+# $page - номер страницы для запроса
+# Автоматически обновляет access token, если получен код ответа 403 (Forbidden).
 function FetchAssets {
     param (
         [int]$page
@@ -87,6 +92,8 @@ function FetchAssets {
     return $assets
 }
 
+# Сохраняет полученные данные об активах в CSV-файл. Принимает параметр:
+# $assets - массив объектов Asset для сохранения
 function SaveAssets {
     param (
         [array]$assets
@@ -94,6 +101,8 @@ function SaveAssets {
     $assets | Export-Csv -Path $savePath -NoTypeInformation -Append -Encoding UTF8
 }
 
+# Основная функция, которая:
+# Загружает токены. При необходимости обновляет access token. Получает данные об активах постранично. Сохраняет результаты в CSV
 function Main() {
     LoadTokensFromFile
     if ($null -eq $accessToken) {
@@ -111,21 +120,22 @@ function Main() {
     Write-Host "Finished fetching assets"
 }
 
+# Entrypoint
 Main
 
 class Asset {
-    [string] $host_name
-    [datetime] $last_seen
-    [datetime] $first_seen
-    [string] $os_version
-    [string] $installed_product_info
-    [string] $tenant_name
-    [string] $isolation
-    [string] $status
-    [string] $ksc_host_id
-    [string] $asset_id
-    [string] $domain
-    [string] $dsc
+    [string] $host_name                  # имя хоста
+    [datetime] $last_seen                # дата последнего пинга хоста
+    [datetime] $first_seen               # дата первого пинга хоста
+    [string] $os_version                 # версия ОС
+    [string] $installed_product_info     # информация об установленных продуктах
+    [string] $tenant_name                # принадлежность хоста к тенанту
+    [string] $isolation                  # заизолирован ли хост
+    [string] $status                     # статус хоста
+    [string] $ksc_host_id                # идентификатор хоста в KSC
+    [string] $asset_id                   # уникальный идентификатор хоста
+    [string] $domain                     # домен
+    [string] $dsc                        # различные сетевые параметры (объединяются через "|" при наличии нескольких значений)
     [string] $dnsd
     [string] $defg
     [string] $mac
