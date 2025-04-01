@@ -1,0 +1,17 @@
+[
+    {
+        "id": 1,
+        "project": "Система учёта",
+        "employee_id": 2
+    },
+    {
+        "id": 2,
+        "project": "Новый лендинг",
+        "employee_id": 5
+    },
+    {
+        "id": 3,
+        "project": "Автоматизация продаж",
+        "employee_id": 1
+    }
+]
