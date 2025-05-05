@@ -2,6 +2,7 @@ import math
 
 
 def divisible_chain(start: int, divisor: int) -> str:
+
     def get_divisors(n: int) -> tuple[int, list[int]]:
         if n < 1:
             return int(math.inf), []
@@ -28,5 +29,5 @@ def divisible_chain(start: int, divisor: int) -> str:
 
 
 if __name__ == "__main__":
-    print(divisible_chain(29, 3))
+    print(divisible_chain(100, 3))
     assert divisible_chain(29, 3) == "29 -> 28 -> 27 -> 9 -> 3 -> 1"
