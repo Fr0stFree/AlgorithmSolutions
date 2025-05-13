@@ -1,13 +1,15 @@
+param (
+    [string]$userId,
+    [string]$tokensFile = "tokens.json",
+    [string]$savePath = "output.csv",
+    [int]$pageSize = 100,
+    [int]$maxPage = 10000
+)
+
 $accessToken = $null
 $refreshToken = $null
-$tokensFile = "tokens.json"
-$userId = "" # your user id
-$url = "https://mdr.kaspersky.com/api/v1/$userId/assets/list"
-$refreshTokenUrl = "https://mdr.kaspersky.com/api/v1/$userId/session/confirm"
-$savePath = "output.csv"
-$maxPage = 10000
-$pageSize = 100
-
+$url = "https://mdr-test.kaspersky.com/api/v1/$userId/assets/list"
+$refreshTokenUrl = "https://mdr-test.kaspersky.com/api/v1/$userId/session/confirm"
 
 # Загружает токены доступа из файла. Проверяет наличие refresh token.
 function LoadTokensFromFile {
@@ -31,7 +33,7 @@ function RefreshAccessToken {
     try {
         $response = Invoke-WebRequest -Uri $refreshTokenUrl -Body ($body | ConvertTo-Json) -Method POST
     } catch {
-        Write-Host "Failed to refresh access token. Response from server: $($_.Exception.Response)"
+        Write-Host "Failed to refresh access token, an error occurred: $($_.Exception.Message)"
         Exit
     }
     $body = $response.Content | ConvertFrom-Json
@@ -53,7 +55,7 @@ function FetchAssets {
     param (
         [int]$page
     )
-     $headers = @{
+    $headers = @{
          Authorization = "Bearer $accessToken"
          ContentType = "application/json"
     }
@@ -72,7 +74,7 @@ function FetchAssets {
             $headers.Authorization = "Bearer $accessToken"
             $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
         } else {
-            Write-Host "Failed to retrieve assets. Response from server: $($_.Exception.Response)"
+            Write-Host "Failed to retrieve assets, an error occurred: $($_.Exception.Message)"
             Exit
         }
     }
