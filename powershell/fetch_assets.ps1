@@ -1,51 +1,68 @@
 param (
-    [string]$userId,
+    [string]$userId = "",
     [string]$tokensFile = "tokens.json",
     [string]$savePath = "output.csv",
-    [int]$pageSize = 100,
-    [int]$maxPage = 10000
+    [int]$startPage = 1,
+    [int]$pageSize = 5000,
+    [string]$baseUrl = "https://mdr.kaspersky.com",
+    [int]$maxRetries = 5
 )
 
 $accessToken = $null
 $refreshToken = $null
-$url = "https://mdr-test.kaspersky.com/api/v1/$userId/assets/list"
-$refreshTokenUrl = "https://mdr-test.kaspersky.com/api/v1/$userId/session/confirm"
+$url = $baseUrl + "/api/v1/$userId/assets/list"
+$refreshTokenUrl = $baseUrl + "/api/v1/$userId/session/confirm"
+
+function WriteLog {
+    param (
+        [string]$message,
+        [string]$level = "INFO"
+    )
+    switch ($level) {
+        "INFO" { $color = "White" }
+        "WARNING" { $color = "Yellow" }
+        "ERROR" { $color = "Red" }
+    }
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    Write-Host "$timestamp [$level] $message" -ForegroundColor $color
+}
 
 # Загружает токены доступа из файла. Проверяет наличие refresh token.
 function LoadTokensFromFile {
-    Write-Host "Loading tokens from file..."
+    WriteLog "Loading tokens from file..."
     $tokens = Get-Content -Path $tokensFile | ConvertFrom-Json
     if ($null -eq $tokens.refresh_token) {
-        Write-Host "Refresh token not found. Check that file '$tokensFile' contains 'refresh_token' field"
-        Exit
+        WriteLog "Refresh token not found. Check that file '$tokensFile' contains 'refresh_token' field" -level "ERROR"
+        Exit 1
     }
     Set-Variable -Name accessToken -Value $tokens.access_token -Scope Global
     Set-Variable -Name refreshToken -Value $tokens.refresh_token -Scope Global
-    Write-Host "Tokens loaded"
+    WriteLog "Tokens loaded"
 }
 
 # Обновляет access token с использованием refresh token. Сохраняет новые токены обратно в файл.
 function RefreshAccessToken {
-    Write-Host "Refreshing access token..."
+    WriteLog "Refreshing access token..."
     $body = @{
         refresh_token = $refreshToken
     }
     try {
         $response = Invoke-WebRequest -Uri $refreshTokenUrl -Body ($body | ConvertTo-Json) -Method POST
-    } catch {
-        Write-Host "Failed to refresh access token, an error occurred: $($_.Exception.Message)"
-        Exit
+    }
+    catch {
+        WriteLog "Failed to refresh access token, an error occurred: $($_.Exception.Message)" -level "ERROR"
+        Exit 1
     }
     $body = $response.Content | ConvertFrom-Json
 
     Set-Variable -Name accessToken -Value $body.access_token -Scope Global
     Set-Variable -Name refreshToken -Value $body.refresh_token -Scope Global
     $tokens = @{
-        access_token = $accessToken
+        access_token  = $accessToken
         refresh_token = $refreshToken
     }
     $tokens | ConvertTo-Json | Set-Content -Path $tokensFile
-    Write-Host "Access token refreshed"
+    WriteLog "Access token refreshed"
 }
 
 # Получает данные об активах с указанной страницы. Принимает параметр:
@@ -53,35 +70,40 @@ function RefreshAccessToken {
 # Автоматически обновляет access token, если получен код ответа 403 (Forbidden).
 function FetchAssets {
     param (
-        [int]$page
+        [int]$page,
+        [int]$currentTry = 0
     )
     $headers = @{
-         Authorization = "Bearer $accessToken"
-         ContentType = "application/json"
+        Authorization = "Bearer $accessToken"
+        ContentType   = "application/json"
     }
     $body = @{
-        sort = "computer_name_hostname:asc"
+        sort      = "first_seen:asc"
         page_size = $pageSize
-        page = $page
-        version = 2
+        page      = $page
+        version   = 2
     }
+    $startTime = Get-Date
     try {
         $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
-    } catch {
+    }
+    catch {
+        WriteLog "Failed to retrieve assets, an error occurred: $($_.Exception.Message)" -level "WARNING"
+        if ($currentTry -ge $maxRetries) {
+            WriteLog "Maximum retry count has been reached" -level "ERROR"
+            Exit 1
+        }
+        WriteLog "Retrying $($currentTry + 1) out of $maxRetries..."
         $statusCode = $_.Exception.Response.StatusCode.Value__
         if ($statusCode -eq 403) {
             RefreshAccessToken
-            $headers.Authorization = "Bearer $accessToken"
-            $response = Invoke-WebRequest -Uri $url -Body ($body | ConvertTo-Json) -Headers $headers -Method POST
-        } else {
-            Write-Host "Failed to retrieve assets, an error occurred: $($_.Exception.Message)"
-            Exit
         }
+        return FetchAssets -page $page -currentTry ($currentTry + 1)
     }
     $body = $response.Content | ConvertFrom-Json
 
     if ($null -eq $body -or $body.Count -eq 0) {
-        Write-Host "No assets found on page $page"
+        WriteLog "No assets found on page $page"
         return $null
     }
 
@@ -90,7 +112,9 @@ function FetchAssets {
         $assetObj = [Asset]::new($asset)
         $assets += $assetObj
     }
-    Write-Host "Page $page fetched and saved to $savePath"
+    $endTime = Get-Date
+    $duration = $endTime - $startTime
+    WriteLog "Page $page fetched with $($assets.Count) assets in $($duration.TotalSeconds) seconds"
     return $assets
 }
 
@@ -106,20 +130,27 @@ function SaveAssets {
 # Основная функция, которая:
 # Загружает токены. При необходимости обновляет access token. Получает данные об активах постранично. Сохраняет результаты в CSV
 function Main() {
+    if ("" -eq $userId) {
+        WriteLog "User id must be specified using -userId parameter" -level ERROR
+        Exit 1
+    }
     LoadTokensFromFile
     if ($null -eq $accessToken) {
         RefreshAccessToken
     }
-    Write-Host "Fetching assets..."
+    WriteLog "Starting to fetching assets from page $startPage with size $pageSize..."
+    $startTimeTotal = Get-Date
     $null | Set-Content -Path $savePath 
-    for ($page = 1; $page -le $maxPage; $page++) {
+    for ($page = $startPage; $page -le 10000; $page++) {
         $result = FetchAssets -page $page
         if ($null -eq $result) {
             break
         }
         SaveAssets -assets $result
     }
-    Write-Host "Finished fetching assets"
+    $endTimeTotal = Get-Date
+    $durationTotal = $endTimeTotal - $startTimeTotal
+    WriteLog "Finished to fetch assets. Elapsed time: $($durationTotal.TotalSeconds) seconds"
 }
 
 # Entrypoint
