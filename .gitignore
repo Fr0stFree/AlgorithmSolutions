@@ -133,3 +133,4 @@ dmypy.json
 .vscode/
 powershell/tokens.json
 powershell/README.md
+.DS_Store
