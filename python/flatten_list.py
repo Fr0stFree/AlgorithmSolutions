@@ -1,11 +1,7 @@
-import weakref
-
-
 def flatten(data: list[int | list]) -> list[int]:
     result = []
     todo = []
-    weakref.finalize(todo, todo.clear)
-    
+
     for element in data:
         todo.append(element)
 

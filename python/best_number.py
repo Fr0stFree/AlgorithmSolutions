@@ -13,7 +13,7 @@ def solve(k: int, m: int, low: int, high: int) -> int:
     katya_score = high // m - (low - 1) // m
     return masha_score - katya_score
 
-def read_data() -> (int, int, int, int):
+def read_data() -> tuple[int, int, int, int]:
     k = int(input())
     m = int(input())
     low = int(input())

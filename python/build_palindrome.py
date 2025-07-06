@@ -13,12 +13,11 @@ def build_palindrome(st):
     new_word = st
     while not new_word == new_word[::-1]:
         step += 1
-        new_word = st + st[step-1::-1]
+        new_word = st + st[step - 1 :: -1]
 
     return new_word
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     assert build_palindrome("abcdc") == "abcdcba"
     assert build_palindrome("ababab") == "abababa"
-

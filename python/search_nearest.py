@@ -17,7 +17,7 @@ def solve(digits: list[int], looking_digits: list[int]) -> list[int]:
     return result
 
 
-def search_nearest(looking_digit: int, digits: list[int]) -> (int, int):
+def search_nearest(looking_digit: int, digits: list[int]) -> tuple[int, int]:
     prev_diff = math.inf
     nearest_digit = digits[0]
     current_index = 0
@@ -34,7 +34,7 @@ def search_nearest(looking_digit: int, digits: list[int]) -> (int, int):
     return nearest_digit, current_index
 
 
-def read_data() -> (list[int], list[int]):
+def read_data() -> tuple[list[int], list[int]]:
     to_int_array = lambda raw: list(map(int, raw.strip().split(" ")))
     _ = input()
     digits = to_int_array(input())
@@ -46,7 +46,7 @@ def read_data() -> (list[int], list[int]):
 assert solve([9, 4, 8, 1, 4], [1, 3, 6, 9, 10]) == [1, 4, 4, 9, 9]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     data = read_data()
     result = solve(*data)
     print(result)
