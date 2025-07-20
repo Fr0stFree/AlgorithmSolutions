@@ -15,6 +15,11 @@ int main()
 }
 
 float fahr(int cel) {
-    float result = cel * 9 / 5 + 32;
+    float result = (float)cel * 9 / 5 + 32;
+    return result;
+}
+
+float celsius(int fahr) {
+    float result = (float)(fahr - 32) * 5 / 9;
     return result;
 }
