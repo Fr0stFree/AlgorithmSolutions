@@ -26,17 +26,3 @@ int main(void)
     print_array(res);
     return 0;
 }
-
-void print_array(int array[ROWS][COLS])
-{
-    for (short row_idx = 0; row_idx < ROWS; row_idx++)
-    {
-        for (short col_idx = 0; col_idx < COLS; col_idx++)
-        {
-            printf("%d", array[row_idx][col_idx]);
-            if (col_idx != COLS - 1)
-                printf(" ");
-        }
-        putchar('\n');
-    }
-}
