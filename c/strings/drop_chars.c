@@ -18,13 +18,11 @@ int main(void)
     char str[100];
     fgets(str, sizeof(str), stdin);
     strip_string(str, sizeof(str));
-
     char* str_ptr = str;
     for (char* ptr = strchr(str_ptr, 'e'); ptr != NULL; ptr = strchr(str_ptr, 'e')) {
         printf("%.*s", (int)(ptr - str_ptr), str_ptr);
         str_ptr = ptr + 1;
     }
     printf("%s\n", str_ptr);
-
     return 0;
 }
