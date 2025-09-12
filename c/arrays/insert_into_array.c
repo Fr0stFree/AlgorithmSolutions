@@ -16,10 +16,12 @@ int main(void)
     int inserts = 0;
 
     for (size_t i = 0; i < count && out_count < TOTAL; i++) {
-        out[out_count++] = digs[i];
+        out[out_count] = digs[i];
+        out_count++;
         if (digs[i] == 5 && out_count < TOTAL) {
             inserts++;
-            out[out_count++] = -inserts;
+            out[out_count] = -inserts;
+            out_count++;
         }
     }
 
