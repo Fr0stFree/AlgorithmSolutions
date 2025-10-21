@@ -27,7 +27,7 @@ class MapReduce:
             result[key].sort()
         return result
 
-    def get_splits(self) -> list[str]:
+    def get_splits(self) -> Generator[str, None, None]:
         while line := sys.stdin.readline():
             yield line
 
