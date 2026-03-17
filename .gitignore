@@ -136,3 +136,10 @@ powershell/README.md
 .DS_Store
 
 a.out
+
+.metals/
+.scala-build/
+.bloop
+
+scala/target/
+scala/project/
