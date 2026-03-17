@@ -141,5 +141,5 @@ a.out
 .scala-build/
 .bloop
 
-scala/target/
-scala/project/
+target/
+project/
