@@ -26,5 +26,20 @@ def flatten_recursive(data: list[int | list]) -> list[int]:
     else:
         return flatten_recursive(data) + flatten_recursive(item)
 
+
+def flatten2(data: list[int | list]) -> list[int]:
+    result = []
+
+    for item in data:
+        if isinstance(item, int):
+            result.append(item)
+        else:
+            for flattened_item in flatten2(item):
+                result.append(flattened_item)
+
+    return result
+
+
 assert flatten([3, 1, [7, [9, 1]], 4, [7], [[9, [7]], 1, 2], 3, [3, 5, 1, 6]]) == [3, 1, 7, 9, 1, 4, 7, 9, 7, 1, 2, 3, 3, 5, 1, 6]
 assert flatten_recursive([3, 1, [7, [9, 1]], 4, [7], [[9, [7]], 1, 2], 3, [3, 5, 1, 6]]) == [3, 1, 7, 9, 1, 4, 7, 9, 7, 1, 2, 3, 3, 5, 1, 6]
+assert flatten2([3, 1, [7, [9, 1]], 4, [7], [[9, [7]], 1, 2], 3, [3, 5, 1, 6]]) == [3, 1, 7, 9, 1, 4, 7, 9, 7, 1, 2, 3, 3, 5, 1, 6]
