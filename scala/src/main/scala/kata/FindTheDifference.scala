@@ -5,8 +5,9 @@ object FindTheDifference extends App {
     t.toList
       .sorted
       .zipAll(s.toList.sorted, ' ', ' ')
-      .collectFirst(({ case (left, right ) if left != right => left}))
+      .find((left, right) => left != right)
       .head
+      ._1
   }
   
   println(findTheDifference("abcd", "abecd"))
