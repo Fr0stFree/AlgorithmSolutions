@@ -29,28 +29,32 @@ final class CountProcessor(condition: FilterCondition) extends Processor {
   }
 }
 
-sealed trait FilterCondition {
-  def apply(info: LineInfo): Boolean
-}
+type FilterCondition = LineInfo => Boolean
+
 object FilterCondition {
-  case class Contains(substring: String) extends FilterCondition {
-    def apply(info: LineInfo): Boolean = info.line.toLowerCase.contains(substring.toLowerCase)
-  }
-  case class NotContains(substring: String) extends FilterCondition {
-    def apply(info: LineInfo): Boolean = !info.line.toLowerCase.contains(substring.toLowerCase)
-  }
-  case class Or(first: FilterCondition, second: FilterCondition) extends FilterCondition {
-    def apply(info: LineInfo): Boolean = first(info) || second(info)
-  }
-  case class And(first: FilterCondition, second: FilterCondition) extends FilterCondition {
-    def apply(info: LineInfo): Boolean = first(info) && second(info)
+  def contains(substring: String): FilterCondition =
+    info => info.line.toLowerCase.contains(substring.toLowerCase)
+
+  def notContains(substring: String): FilterCondition =
+    info => !info.line.toLowerCase.contains(substring.toLowerCase)
+
+  def or(first: FilterCondition, second: FilterCondition): FilterCondition =
+    info => first(info) || second(info)
+
+  def and(first: FilterCondition, second: FilterCondition): FilterCondition =
+    info => first(info) && second(info)
+
+  implicit class FilterConditionOps(val condition: FilterCondition) extends AnyVal {
+    def ||(other: FilterCondition): FilterCondition = FilterCondition.or(condition, other)
+    def &&(other: FilterCondition): FilterCondition = FilterCondition.and(condition, other)
   }
 }
 
 object Grep extends App {
+  import FilterCondition._
+
   val filePath  = "C:\\Users\\me\\Desktop\\Projects\\AlgorithmSolutions\\scala\\src\\main\\scala\\kata\\file.txt"
-  val condition = FilterCondition.And(FilterCondition.Contains("Lorem"), FilterCondition.Contains("of"))
-  val processor = StringIndexProcessor(condition)
+  val processor = StringIndexProcessor(FilterCondition.contains("Lorem") && FilterCondition.contains("of"))
 
   Using(Source.fromFile(filePath))(source => processor.process(source.getLines())).fold(
     error => println(s"Failed to open the file due to an error ${error}"),
