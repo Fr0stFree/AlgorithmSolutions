@@ -1,31 +1,26 @@
-def calculator(init_number: int) -> list[int]:
-    memo = {}
+from functools import lru_cache
 
-    def _calculate(number: int) -> list[int]:
-        if number < 1:
-            return []
+@lru_cache
+def calculator(number: int) -> list[int]:
+    if number < 1:
+        return []
 
-        if number in memo:
-            return memo[number]
+    options = []
 
-        options = []
-
-        if number % 2 == 0:
-            option = [number] + _calculate(number // 2)
-            options.append(option)
-
-        if number % 3 == 0:
-            option = [number] + _calculate(number // 3)
-            options.append(option)
-
-        option = [number] + _calculate(number - 1)
+    if number % 2 == 0:
+        option = [number] + calculator(number // 2)
         options.append(option)
 
-        best_option = min(options, key=len)
-        memo[number] = best_option
-        return memo[number]
+    if number % 3 == 0:
+        option = [number] + calculator(number // 3)
+        options.append(option)
 
-    return _calculate(init_number)
+    option = [number] + calculator(number - 1)
+    options.append(option)
+
+    best_option = min(options, key=len)
+    return best_option
+
 
 
 if __name__ == "__main__":
